@@ -1,0 +1,15 @@
+---
+title: "SQuaScheD"
+author: "Julien Gaugaz"
+date: "27 Jul 2014"
+output:
+  md_document:
+    variant: markdown_github
+    toc: true
+    toc_depth: 2
+---
+
+# SQuaScheD -- Here is the Data. Where is its Schema? Additional Material
+
+We present here additional material related to the paper "Here is the Data. Where is its Schema?" submitted to WSDM'15.
+
