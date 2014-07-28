@@ -2,6 +2,10 @@
 title: "SQuaScheD -- Additional Material"
 author: "Julien Gaugaz"
 output:
+  knitrBootstrap::bootstrap_document:
+    title: "SQuaScheD -- Additional Material"
+    theme: spacelab
+    highlight: sunburst
   html_document:
     theme: spacelab
   md_document:
@@ -11,3 +15,171 @@ output:
 ---
 
 We present here additional material related to the paper "Here is the Data. Where is its Schema?" submitted to WSDM'15.
+
+```{r include = FALSE}
+library(knitr)
+library(clusterSim)
+opts_chunk$set(eval = T,
+               cache = T,
+               autodep = T,
+               fig.width = 10, 
+               fig.height = 6, 
+               results = 'asis',
+               warning = F,
+               message = F,
+               error = F,
+               echo = F)
+wd <- function() setwd("../schemdesc/r")
+wd()
+source("R/hgraph.R")
+source("R/dataset_hierarchies.R")
+source("R/eigs.R")
+source("R/inextrinsic.R")
+source("R/results-utils.R")
+source("R/evaluation.R")
+source("R/paper_graph-utils.R")
+library(igraph)
+library(ggplot2)
+library(reshape2)
+library(tidyr)
+library(dplyr, warn.conflicts=F)
+library(pander, warn.conflicts=F)
+panderOptions("table.style", "rmarkdown")
+panderOptions("table.split.table", Inf)
+library(data.table, warn.conflicts=F)
+library(magrittr)
+library(gridExtra)
+library(xtable)
+library(scales)
+library(jsonlite)
+```
+
+# MDL Evolution in SQuaScheD
+The figures below show the evolution of the MDL, class-precision, -recall, and -F2 along the steps of the SQUASCHED process for all datasets.
+```{r fig.height = 10, fig.width=20}
+wd()
+results <- load.results() %>%
+  friendly.names %>% 
+  filter(builder == "spectral", dataset != "sample") %>%
+  arrange(dataset)
+for(row in  1:nrow(results)){
+  res <- results[row,]
+  pandoc.header(res$dataset.fullName, level = 2)
+    capture.output(read.inext(res, rm.lowerCotopy.weights=F) %>% 
+                     plot.inext(main=res$dataset, ggtheme=theme_ppr, beta=2) %>%
+                     print, file = "/dev/null")
+}
+```
+
+# Ground Truth Class Distribution
+Distribution of the bottom-most ground-truth class in the discovered class hierarchy for all datasets.
+
+```{r}
+wd()
+results <- load.results() %>%
+  friendly.names %>% 
+  filter.selected %>%
+  filter.spectral %>%
+  mutate(algo.name = algo %>% 
+           as.character %>%
+           gsub("spectral", "SQuaScheD", .) %>% 
+           gsub("ent-cobweb-", "COBWEB ", .))
+datasets <- results %>% with(dataset.fullName) %>% unique %>% sort 
+algo.names <- results %>% with(algo.name) %>% unique %>% sort(decreasing = T)
+plot.hierarchy.tree <- function(ds, alg) tryCatch({
+  pandoc.header(alg, level=3)
+  if(alg == "Ground Truth") {
+    res <- results %>% filter(dataset.fullName == ds, algo == "spectral")
+    hierarchy.for.dataset(res$dataset) %>% graph.gt.h(rescale=T) %>% plot.tree(rescale=F, vertex.size=11, vertex.label.dist=-.8, main = paste("Ground Truth", res$dataset, sep = " - "))
+  } else {
+    res <- results %>% filter(dataset.fullName == ds, algo.name == alg)
+    is.pruned <- !(res$algo == "spectral") && (res %>% with(pruned)) != "not-pruned"
+    is.partitioned <- !(res$algo == "spectral") && (res %>% with(assignment)) == "partitioning"
+    g <- graph.h(res, rescale=T, set.vertices=set.precision.pie.vertices, aspect.ratio = 4, partitioning = is.partitioned, pruned = is.pruned) 
+    capture.output(plot.tree(g, rescale=F, vertex.label=NA, vertex.size=11) %>% print, file = "/dev/null")
+  }
+})
+```
+
+```{r fig.height=25, fig.width=50}
+wd()
+ds <- datasets[1]
+pandoc.header(ds, level=2)
+plot.hierarchy.tree(ds, "Ground Truth")
+for(alg in algo.names) {
+  plot.hierarchy.tree(ds, alg)
+}
+```
+
+```{r fig.height=25, fig.width=50, eval=TRUE}
+wd()
+ds <- datasets[2]
+pandoc.header(ds, level=2)
+plot.hierarchy.tree(ds, "Ground Truth")
+for(alg in algo.names) {
+  plot.hierarchy.tree(ds, alg)
+}
+```
+
+```{r fig.height=25, fig.width=50, eval=TRUE}
+wd()
+ds <- datasets[3]
+pandoc.header(ds, level=2)
+plot.hierarchy.tree(ds, "Ground Truth")
+for(alg in algo.names) {
+  plot.hierarchy.tree(ds, alg)
+}
+```
+
+```{r fig.height=25, fig.width=50, eval=TRUE}
+wd()
+ds <- datasets[4]
+pandoc.header(ds, level=2)
+plot.hierarchy.tree(ds, "Ground Truth")
+for(alg in algo.names) {
+  plot.hierarchy.tree(ds, alg)
+}
+```
+
+```{r fig.height=25, fig.width=50, eval=TRUE}
+wd()
+ds <- datasets[5]
+pandoc.header(ds, level=2)
+plot.hierarchy.tree(ds, "Ground Truth")
+for(alg in algo.names) {
+  plot.hierarchy.tree(ds, alg)
+}
+```
+
+```{r fig.height=25, fig.width=50}
+wd()
+ds <- datasets[6]
+pandoc.header(ds, level=2)
+plot.hierarchy.tree(ds, "Ground Truth")
+for(alg in algo.names) {
+  plot.hierarchy.tree(ds, alg)
+}
+```
+
+```{r fig.height=25, fig.width=50}
+wd()
+ds <- datasets[7]
+pandoc.header(ds, level=2)
+plot.hierarchy.tree(ds, "Ground Truth")
+for(alg in algo.names) {
+  plot.hierarchy.tree(ds, alg)
+}
+```
+
+```{r fig.height=25, fig.width=50}
+wd()
+ds <- datasets[8]
+pandoc.header(ds, level=2)
+plot.hierarchy.tree(ds, "Ground Truth")
+for(alg in algo.names) {
+  plot.hierarchy.tree(ds, alg)
+}
+```
+
+
+
