@@ -84,6 +84,11 @@ root=data;
 update(root);
 }
 });
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+};
 
 function update(source) {
 
@@ -164,7 +169,7 @@ function update(source) {
              // .style("top",300)
               .html(page);
               
-              
+       d3.select(this.parentNode).moveToFront();         
   }).on('mouseout', function(d){
       
  
