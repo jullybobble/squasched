@@ -11,10 +11,8 @@ output:
   md_document:
     variant: markdown_github
     toc: true
-    toc_depth: 2
+    toc_depth: 3
 ---
-
-We present here additional material related to the paper "Here is the Data. Where is its Schema?" submitted to WSDM'15.
 
 ```{r include = FALSE}
 library(knitr)
@@ -54,24 +52,25 @@ library(scales)
 library(jsonlite)
 ```
 
-# MDL Evolution in SQuaScheD
-The figures below show the evolution of the MDL, class-precision, -recall, and -F2 along the steps of the SQUASCHED process for all datasets.
-```{r fig.height = 10, fig.width=20}
-wd()
-results <- load.results() %>%
-  friendly.names %>% 
-  filter(builder == "spectral", dataset != "sample") %>%
-  arrange(dataset)
-for(row in  1:nrow(results)){
-  res <- results[row,]
-  pandoc.header(res$dataset.fullName, level = 2)
-    capture.output(read.inext(res, rm.lowerCotopy.weights=F) %>% 
-                     plot.inext(main=res$dataset, ggtheme=theme_ppr, beta=2) %>%
-                     print, file = "/dev/null")
-}
-```
+# SQuaScheD - Unsupervised Schema Discovery for Heterogeneous Data
 
-# Ground Truth Class Distribution
+We provide on this web site additional material related to the article "Here is the Data. Where is its Schema?" submitted to the 24<sup>th</sup> International WWW Conference 2015 as submission #312.
+
+You will find below the detailed hierarchies, ground truth class distributions and MDL evolution for hierarchies discovered by SQuaScheD on all datasets mentioned in the paper.
+
+## Detailed SQuaScheD Discovered Hierarchies
+We present below interactive visualizations showing the most representative attributes and entities for each class of the SQuaScheD discovered hierarchies for each datasets:
+
+* [Activity-EducationalInstitution](./Act.EduInst_hierarchy-spectral_20140713-0949-0m76br6.json.html)
+* [ArchitecturalStructure](./Arch.Struct_hierarchy-spectral_20140329-1845-42iib6o.json.html)
+* [Event-NaturalPlace-WrittenWork](./E.NP.WW_hierarchy-spectral_20140329-1845-05k6gq3.json.html)
+* [Event](./Event_hierarchy-spectral_20140329-1843-0m7igmx.json.html)
+* [Infrastructure](./Infr._hierarchy-spectral_20140329-1844-43m363w.json.html)
+* [RouteOfTransportation](./Route_hierarchy-spectral_20140329-1844-0m7k7se.json.html)
+* [Species](./Species_hierarchy-spectral_20140329-1846-0140ukb.json.html)
+* [Tunnel](./Tunnel_hierarchy-spectral_20140523-0533-4ldfgin.json.html)
+
+## Ground Truth Class Distribution
 Distribution of the bottom-most ground-truth class in the discovered class hierarchy for all datasets.
 
 ```{r}
@@ -178,6 +177,23 @@ pandoc.header(ds, level=2)
 plot.hierarchy.tree(ds, "Ground Truth")
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
+}
+```
+
+## MDL Evolution in SQuaScheD
+The figures below show the evolution of the MDL, class-precision, -recall, and -F2 along the steps of the SQUASCHED process for all datasets.
+```{r fig.height = 10, fig.width=20}
+wd()
+results <- load.results() %>%
+  friendly.names %>% 
+  filter(builder == "spectral", dataset != "sample") %>%
+  arrange(dataset)
+for(row in  1:nrow(results)){
+  res <- results[row,]
+  pandoc.header(res$dataset.fullName, level = 2)
+    capture.output(read.inext(res, rm.lowerCotopy.weights=F) %>% 
+                     plot.inext(main=res$dataset, ggtheme=theme_ppr, beta=2) %>%
+                     print, file = "/dev/null")
 }
 ```
 
