@@ -144,6 +144,19 @@ function update(source) {
             d3.select(this.parentNode).append("foreignObject")
                 .attr("width", 3000)
                 .attr("height", 2000)
+                .attr("x", function(d){
+            var bodyWidth = document.body.clientWidth || document.body.clientWidth;
+            var scrollLeft = document.documentElement.scrollLeft ||document.body.scrollLeft;
+            var tableWidth = 180 + 130*d.att_label.length + 60;
+            if(d.x < scrollLeft + 40 || d.x < scrollLeft + bodyWidth - tableWidth -40){
+                return 0;
+            }
+            if( d.x-scrollLeft <  scrollLeft + bodyWidth-tableWidth-d.x){
+                return scrollLeft + 40 - d.x;      
+            }
+            return scrollLeft + bodyWidth - tableWidth -40 - d.x;
+        })
+                .attr("y",10)
               .append("xhtml:body")
               .style("font", "14px 'Helvetica Neue'")
           //    .style("position", "absolute")
