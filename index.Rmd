@@ -86,7 +86,7 @@ results <- load.results() %>%
 datasets <- results %>% with(dataset.fullName) %>% unique %>% sort 
 algo.names <- results %>% with(algo.name) %>% unique %>% sort(decreasing = T)
 plot.hierarchy.tree <- function(ds, alg) tryCatch({
-  pandoc.header(alg, level=3)
+  pandoc.header(alg, level=4)
   if(alg == "Ground Truth") {
     res <- results %>% filter(dataset.fullName == ds, algo == "spectral")
     hierarchy.for.dataset(res$dataset) %>% graph.gt.h(rescale=T) %>% plot.tree(rescale=F, vertex.size=11, vertex.label.dist=-.8, main = paste("Ground Truth", res$dataset, sep = " - "))
@@ -103,7 +103,7 @@ plot.hierarchy.tree <- function(ds, alg) tryCatch({
 ```{r fig.height=25, fig.width=50}
 wd()
 ds <- datasets[1]
-pandoc.header(ds, level=2)
+pandoc.header(ds, level=3)
 plot.hierarchy.tree(ds, "Ground Truth")
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
@@ -113,7 +113,7 @@ for(alg in algo.names) {
 ```{r fig.height=25, fig.width=50, eval=TRUE}
 wd()
 ds <- datasets[2]
-pandoc.header(ds, level=2)
+pandoc.header(ds, level=3)
 plot.hierarchy.tree(ds, "Ground Truth")
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
@@ -123,7 +123,7 @@ for(alg in algo.names) {
 ```{r fig.height=25, fig.width=50, eval=TRUE}
 wd()
 ds <- datasets[3]
-pandoc.header(ds, level=2)
+pandoc.header(ds, level=3)
 plot.hierarchy.tree(ds, "Ground Truth")
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
@@ -133,7 +133,7 @@ for(alg in algo.names) {
 ```{r fig.height=25, fig.width=50, eval=TRUE}
 wd()
 ds <- datasets[4]
-pandoc.header(ds, level=2)
+pandoc.header(ds, level=3)
 plot.hierarchy.tree(ds, "Ground Truth")
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
@@ -143,7 +143,7 @@ for(alg in algo.names) {
 ```{r fig.height=25, fig.width=50, eval=TRUE}
 wd()
 ds <- datasets[5]
-pandoc.header(ds, level=2)
+pandoc.header(ds, level=3)
 plot.hierarchy.tree(ds, "Ground Truth")
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
@@ -153,7 +153,7 @@ for(alg in algo.names) {
 ```{r fig.height=25, fig.width=50}
 wd()
 ds <- datasets[6]
-pandoc.header(ds, level=2)
+pandoc.header(ds, level=3)
 plot.hierarchy.tree(ds, "Ground Truth")
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
@@ -163,7 +163,7 @@ for(alg in algo.names) {
 ```{r fig.height=25, fig.width=50}
 wd()
 ds <- datasets[7]
-pandoc.header(ds, level=2)
+pandoc.header(ds, level=3)
 plot.hierarchy.tree(ds, "Ground Truth")
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
@@ -173,7 +173,7 @@ for(alg in algo.names) {
 ```{r fig.height=25, fig.width=50}
 wd()
 ds <- datasets[8]
-pandoc.header(ds, level=2)
+pandoc.header(ds, level=3)
 plot.hierarchy.tree(ds, "Ground Truth")
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
@@ -190,7 +190,7 @@ results <- load.results() %>%
   arrange(dataset)
 for(row in  1:nrow(results)){
   res <- results[row,]
-  pandoc.header(res$dataset.fullName, level = 2)
+  pandoc.header(res$dataset.fullName, level = 3)
     capture.output(read.inext(res, rm.lowerCotopy.weights=F) %>% 
                      plot.inext(main=res$dataset, ggtheme=theme_ppr, beta=2) %>%
                      print, file = "/dev/null")
