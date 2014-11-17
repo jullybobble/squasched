@@ -15,10 +15,12 @@ output:
 ---
 
 ```{r include = FALSE}
+# Sys.setlocale(local = "en_US.UTF-8")
+# Sys.setlocale()
 library(knitr)
 library(clusterSim)
 opts_chunk$set(eval = T,
-               cache = T,
+               cache = F,
                autodep = T,
                fig.width = 10, 
                fig.height = 6, 
@@ -28,6 +30,7 @@ opts_chunk$set(eval = T,
                error = F,
                echo = F)
 wd <- function() setwd("../schemdesc/r")
+# wd <- function() setwd("../../schemdesc/r")
 wd()
 source("R/hgraph.R")
 source("R/dataset_hierarchies.R")
@@ -59,7 +62,9 @@ We provide on this web site additional material related to the article "Here is 
 You will find below the detailed hierarchies, ground truth class distributions and MDL evolution for hierarchies discovered by SQuaScheD on all datasets mentioned in the paper.
 
 ## Detailed SQuaScheD Discovered Hierarchies
-We present below interactive visualizations showing the most representative attributes and entities for each class of the SQuaScheD discovered hierarchies for each datasets:
+We present below interactive visualizations showing the most representative attributes and entities for each class of the SQuaScheD discovered hierarchies for each datasets. 
+
+We can observe that the divergence between the SQuaScheD results and the ground truth is mainly due to two factors: First, some leaf classes in the ground truth can be further divided into subclasses indeed. For instance, *election* can be divided into & *state election* and *general election*; *Event* can divided into events in different locations, such as US, Korea, China, etc.  Second, there are meta attributes in the data that may mislead the discovery process. For example, some entities are assocated with images and some entities are not; as an image has multiple attributes, such as *image_size* and *url*, it may force Squasched to divide the entities into a class with image and a class without image.
 
 * [Activity-EducationalInstitution](./Act.EduInst_hierarchy-spectral_20140713-0949-0m76br6.json.html)
 * [ArchitecturalStructure](./Arch.Struct_hierarchy-spectral_20140329-1845-42iib6o.json.html)
@@ -73,6 +78,8 @@ We present below interactive visualizations showing the most representative attr
 ## Ground Truth Class Distribution
 Distribution of the bottom-most ground-truth class in the discovered class hierarchy for all datasets.
 
+**Hint:** you can click on the images to enlarge them.
+
 ```{r}
 wd()
 results <- load.results() %>%
@@ -84,27 +91,28 @@ results <- load.results() %>%
            gsub("spectral", "SQuaScheD", .) %>% 
            gsub("ent-cobweb-", "COBWEB ", .))
 datasets <- results %>% with(dataset.fullName) %>% unique %>% sort 
-algo.names <- results %>% with(algo.name) %>% unique %>% sort(decreasing = T)
-plot.hierarchy.tree <- function(ds, alg) tryCatch({
-  pandoc.header(alg, level=4)
-  if(alg == "Ground Truth") {
-    res <- results %>% filter(dataset.fullName == ds, algo == "spectral")
-    hierarchy.for.dataset(res$dataset) %>% graph.gt.h(rescale=T) %>% plot.tree(rescale=F, vertex.size=11, vertex.label.dist=-.8, main = paste("Ground Truth", res$dataset, sep = " - "))
-  } else {
-    res <- results %>% filter(dataset.fullName == ds, algo.name == alg)
-    is.pruned <- !(res$algo == "spectral") && (res %>% with(pruned)) != "not-pruned"
-    is.partitioned <- !(res$algo == "spectral") && (res %>% with(assignment)) == "partitioning"
-    g <- graph.h(res, rescale=T, set.vertices=set.precision.pie.vertices, aspect.ratio = 4, partitioning = is.partitioned, pruned = is.pruned) 
-    capture.output(plot.tree(g, rescale=F, vertex.label=NA, vertex.size=11) %>% print, file = "/dev/null")
-  }
-})
+algo.names <- results %>% with(algo) %>% unique %>% sort(decreasing = T) %>% as.character
+
 ```
 
 ```{r fig.height=25, fig.width=50}
 wd()
 ds <- datasets[1]
 pandoc.header(ds, level=3)
-plot.hierarchy.tree(ds, "Ground Truth")
+plot.hierarchy.tree <- function(ds, alg, label.size = 1) tryCatch({
+  pandoc.header(alg, level=4)
+  if(alg == "Ground Truth") {
+    res <- results %>% filter(dataset.fullName == ds, algo == "spectral")
+    hierarchy.for.dataset(res$dataset) %>% graph.gt.h(rescale=T) %>% plot.tree(rescale=F, vertex.size=11, vertex.label.dist=-.8, main = paste("Ground Truth", res$dataset, sep = " - "), vertex.label.cex = label.size)
+  } else {
+    res <- results %>% filter(dataset.fullName == ds, algo == alg)
+    is.pruned <- !(res$algo == "spectral") && (res %>% with(pruned)) != "not-pruned"
+    is.partitioned <- !(res$algo == "spectral") && (res %>% with(assignment)) == "partitioning"
+    g <- graph.h(res, rescale=T, set.vertices=set.precision.pie.vertices, aspect.ratio = 4, partitioning = is.partitioned, pruned = is.pruned) 
+    capture.output(plot.tree(g, rescale=F, vertex.label=NA, vertex.size=11) %>% print, file = "/dev/null")
+  }
+})
+plot.hierarchy.tree(ds, "Ground Truth", label.size = 4)
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
 }
@@ -114,7 +122,7 @@ for(alg in algo.names) {
 wd()
 ds <- datasets[2]
 pandoc.header(ds, level=3)
-plot.hierarchy.tree(ds, "Ground Truth")
+plot.hierarchy.tree(ds, "Ground Truth", label.size = 4)
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
 }
@@ -124,7 +132,7 @@ for(alg in algo.names) {
 wd()
 ds <- datasets[3]
 pandoc.header(ds, level=3)
-plot.hierarchy.tree(ds, "Ground Truth")
+plot.hierarchy.tree(ds, "Ground Truth", label.size = 4)
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
 }
@@ -134,7 +142,7 @@ for(alg in algo.names) {
 wd()
 ds <- datasets[4]
 pandoc.header(ds, level=3)
-plot.hierarchy.tree(ds, "Ground Truth")
+plot.hierarchy.tree(ds, "Ground Truth", label.size = 4)
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
 }
@@ -144,7 +152,7 @@ for(alg in algo.names) {
 wd()
 ds <- datasets[5]
 pandoc.header(ds, level=3)
-plot.hierarchy.tree(ds, "Ground Truth")
+plot.hierarchy.tree(ds, "Ground Truth", label.size = 4)
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
 }
@@ -154,7 +162,7 @@ for(alg in algo.names) {
 wd()
 ds <- datasets[6]
 pandoc.header(ds, level=3)
-plot.hierarchy.tree(ds, "Ground Truth")
+plot.hierarchy.tree(ds, "Ground Truth", label.size = 4)
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
 }
@@ -164,7 +172,7 @@ for(alg in algo.names) {
 wd()
 ds <- datasets[7]
 pandoc.header(ds, level=3)
-plot.hierarchy.tree(ds, "Ground Truth")
+plot.hierarchy.tree(ds, "Ground Truth", label.size = 4)
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
 }
@@ -174,7 +182,7 @@ for(alg in algo.names) {
 wd()
 ds <- datasets[8]
 pandoc.header(ds, level=3)
-plot.hierarchy.tree(ds, "Ground Truth")
+plot.hierarchy.tree(ds, "Ground Truth", label.size = 4)
 for(alg in algo.names) {
   plot.hierarchy.tree(ds, alg)
 }
